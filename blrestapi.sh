@@ -6,7 +6,7 @@ start() {
 }
 
 stop() {
-    pid=`ps ax | grep "flask" | awk '{print $1}'`
+    pid=`ps ax | grep "flask run" | awk '{print $1}'`
     if [ ! -z $pid ];then
       kill -9 $pid
     fi
