@@ -30,7 +30,7 @@ headers = {
 @app.get("/osspoi_master")
 @cross_origin()
 def get_osspoi_master():
-    response = requests.get(f"{data['gitlab']['apiUrl']}/{data['gitlab']['namespace']}/besecure-assets-store/{data['gitlab']['branch']}/projects/project-metadata.json", headers=headers)
+    response = requests.get(f"{data['gitlab']['gitLabUrl']}/{data['gitlab']['namespace']}/besecure-assets-store/{data['gitlab']['branch']}/projects/project-metadata.json", headers=headers)
     if response.status_code == 200:
         json_data = response.json()
         return json_data
@@ -39,7 +39,7 @@ def get_osspoi_master():
 @app.get("/version_details/<filename>")
 @cross_origin()
 def get_version_detail(filename):
-    response = requests.get(f"{data['gitlab']['apiUrl']}/{data['gitlab']['namespace']}/besecure-assets-store/{data['gitlab']['branch']}/projects/project-version/{filename}", headers=headers)
+    response = requests.get(f"{data['gitlab']['gitLabUrl']}/{data['gitlab']['namespace']}/besecure-assets-store/{data['gitlab']['branch']}/projects/project-version/{filename}", headers=headers)
     if response.status_code == 200:
         json_data = response.json()
         return json_data
@@ -48,7 +48,7 @@ def get_version_detail(filename):
 @app.get("/assessment_datastore/<path:pars>")
 @cross_origin()
 def get_assessment_datastore(pars):
-    response = requests.get(f"{data['gitlab']['apiUrl']}/{data['gitlab']['namespace']}/besecure-assessment-datastore/{data['gitlab']['branch']}/{pars}", headers=headers)
+    response = requests.get(f"{data['gitlab']['gitLabUrl']}/{data['gitlab']['namespace']}/besecure-assessment-datastore/{data['gitlab']['branch']}/{pars}", headers=headers)
     if response.status_code == 200:
         json_data = response.json()
         return json_data
@@ -57,7 +57,7 @@ def get_assessment_datastore(pars):
 @app.get("/vulnerability_of_interest")
 @cross_origin()
 def get_voi():
-    response = requests.get(f"{data['gitlab']['apiUrl']}/{data['gitlab']['namespace']}/besecure-assets-store/{data['gitlab']['branch']}/vulnerabilities/vulnerability-metadata.json", headers=headers)
+    response = requests.get(f"{data['gitlab']['gitLabUrl']}/{data['gitlab']['namespace']}/besecure-assets-store/{data['gitlab']['branch']}/vulnerabilities/vulnerability-metadata.json", headers=headers)
     if response.status_code == 200:
         json_data = response.json()
         return json_data
@@ -66,7 +66,7 @@ def get_voi():
 @app.get("/model_of_interest")
 @cross_origin()
 def get_moi():
-    response = requests.get(f"{data['gitlab']['apiUrl']}/{data['gitlab']['namespace']}/besecure-assets-store/{data['gitlab']['branch']}/models/model-metadata.json", headers=headers)
+    response = requests.get(f"{data['gitlab']['gitLabUrl']}/{data['gitlab']['namespace']}/besecure-assets-store/{data['gitlab']['branch']}/models/model-metadata.json", headers=headers)
     if response.status_code == 200:
         json_data = response.json()
         return json_data
