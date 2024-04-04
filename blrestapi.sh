@@ -1,7 +1,7 @@
 #!/bin/bash
 
 start() {
-   cd /opt/beslighthouse-rest-api
+   cd /opt/BeSRestApi/beslighthouse-rest-api
 
    pip install -r requirements.txt
 
