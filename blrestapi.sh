@@ -2,15 +2,14 @@
 
 start() {
    cd /opt/BeSRestApi/beslighthouse-rest-api
-
-   pip install -r requirements.txt
-
-   flask run &
+   flask run --host="0.0.0.0" --port="5000" &
 }
 
 stop() {
-    pid=`ps ax | grep "flask run" | awk '{print $1}'`
-    kill -9 $pid
+    pid=`ps ax | grep "flask" | awk '{print $1}'`
+    if [ ! -z $pid ];then
+      kill -9 $pid
+    fi
 }
 
 case "$1" in 
