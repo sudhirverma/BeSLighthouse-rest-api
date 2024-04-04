@@ -4,8 +4,8 @@ After=network.target
  
 [Service]
 #WorkingDirectory=/opt/beslighthouse
-ExecStart=/usr/bin/blrestapi.sh start
-ExecStop=/usr/bin/blrestapi.sh stop
+ExecStart=/usr/lib/blrestapi.sh start
+ExecStop=/usr/lib/blrestapi.sh stop
 #Restart=always
 #RestartSec=10
  
