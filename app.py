@@ -23,33 +23,36 @@ with open(file_path, 'r') as file:
     # Load JSON data
     data = json.load(file)
 
-headers = {
-    'PRIVATE-TOKEN': data["gitlab"]["token"]
-}
+active_tool = config.get("activeTool", "gitlab").lower()
+tool_config = config.get(active_tool, {})
 
-GITLAB_API_BASE = f"{data['gitlab']['gitLabUrl']}/api/v4"
-GITLAB_NAMESPACE = data['gitlab']['namespace']
-DEFAULT_BRANCH = data['gitlab']['branch']
+NAMESPACE = tool_config.get("namespace")
+BRANCH = tool_config.get("branch", "main")
+TOKEN = tool_config.get("token")
 
-# Cache project IDs
+headers = {}
+if active_tool == "gitlab" and TOKEN:
+    headers = {'PRIVATE-TOKEN': TOKEN}
+elif active_tool == "github" and TOKEN:
+    headers = {'Authorization': f'token {TOKEN}'}
+
 project_id_cache = {}
 
-def get_project_id(project_name):
-    """Get GitLab project ID for a given project name."""
-    key = f"{GITLAB_NAMESPACE}/{project_name}"
+def get_project_id_gitlab(project_name):
+    key = f"{NAMESPACE}/{project_name}"
     if key in project_id_cache:
         return project_id_cache[key]
 
     try:
         response = requests.get(
-            f"{GITLAB_API_BASE}/projects",
+            f"{config['gitlab']['gitLabUrl']}/api/v4/projects",
             headers=headers,
             params={"search": project_name}
         )
         response.raise_for_status()
         projects = response.json()
         for project in projects:
-            if project["path_with_namespace"] == f"{GITLAB_NAMESPACE}/{project_name}":
+            if project["path_with_namespace"] == f"{NAMESPACE}/{project_name}":
                 project_id_cache[key] = project["id"]
                 return project["id"]
         return None
@@ -57,14 +60,21 @@ def get_project_id(project_name):
         print(f"Error getting project ID: {e}")
         return None
 
-def fetch_file_from_gitlab(project_name, file_path, branch=DEFAULT_BRANCH):
-    """Fetch file content from GitLab repo."""
-    project_id = get_project_id(project_name)
-    if not project_id:
-        return {"error": f"Project '{project_name}' not found."}
+def fetch_file(project_name, file_path, branch=BRANCH):
+    if active_tool == "gitlab":
+        project_id = get_project_id_gitlab(project_name)
+        if not project_id:
+            return {"error": f"GitLab project '{project_name}' not found."}
 
-    encoded_path = urllib.parse.quote(file_path, safe='')
-    url = f"{GITLAB_API_BASE}/projects/{project_id}/repository/files/{encoded_path}/raw?ref={branch}"
+        encoded_path = urllib.parse.quote(file_path, safe='')
+        url = f"{config['gitlab']['gitLabUrl']}/api/v4/projects/{project_id}/repository/files/{encoded_path}/raw?ref={branch}"
+
+    elif active_tool == "github":
+        # GitHub raw URL
+        url = f"{tool_config['apiUrl']}/{NAMESPACE}/{project_name}/{branch}/{file_path}"
+
+    else:
+        return {"error": f"Unsupported active tool: {active_tool}"}
 
     try:
         response = requests.get(url, headers=headers)
