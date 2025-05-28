@@ -3,6 +3,7 @@ from flask import Flask
 import os
 import json
 import requests
+import urllib.parse
 from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
@@ -23,8 +24,8 @@ with open(file_path, 'r') as file:
     # Load JSON data
     data = json.load(file)
 
-active_tool = config.get("activeTool", "gitlab").lower()
-tool_config = config.get(active_tool, {})
+active_tool = data.get("activeTool", "gitlab").lower()
+tool_config = data.get(active_tool, {})
 
 NAMESPACE = tool_config.get("namespace")
 BRANCH = tool_config.get("branch", "main")
@@ -45,7 +46,7 @@ def get_project_id_gitlab(project_name):
 
     try:
         response = requests.get(
-            f"{config['gitlab']['gitLabUrl']}/api/v4/projects",
+            f"{data['gitlab']['gitLabUrl']}/api/v4/projects",
             headers=headers,
             params={"search": project_name}
         )
@@ -67,7 +68,7 @@ def fetch_file(project_name, file_path, branch=BRANCH):
             return {"error": f"GitLab project '{project_name}' not found."}
 
         encoded_path = urllib.parse.quote(file_path, safe='')
-        url = f"{config['gitlab']['gitLabUrl']}/api/v4/projects/{project_id}/repository/files/{encoded_path}/raw?ref={branch}"
+        url = f"{data['gitlab']['gitLabUrl']}/api/v4/projects/{project_id}/repository/files/{encoded_path}/raw?ref={branch}"
 
     elif active_tool == "github":
         # GitHub raw URL
