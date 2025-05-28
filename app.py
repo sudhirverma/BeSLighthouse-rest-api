@@ -90,29 +90,29 @@ def fetch_file(project_name, file_path, branch=BRANCH):
 @app.get("/osspoi_master")
 @cross_origin()
 def get_osspoi_master():
-    return fetch_file_from_gitlab("besecure-assets-store", "projects/project-metadata.json")
+    return fetch_file("besecure-assets-store", "projects/project-metadata.json")
 
 @app.get("/version_details/<filename>")
 @cross_origin()
 def get_version_detail(filename):
-    return fetch_file_from_gitlab("besecure-assets-store", f"projects/project-version/{filename}")
+    return fetch_file("besecure-assets-store", f"projects/project-version/{filename}")
 
 @app.get("/assessment_datastore/<path:pars>")
 @cross_origin()
 def get_assessment_datastore(pars):
-    return fetch_file_from_gitlab("besecure-assessment-datastore", pars)
+    return fetch_file("besecure-assessment-datastore", pars)
 
 @app.get("/vulnerability_of_interest")
 @cross_origin()
 def get_voi():
-    return fetch_file_from_gitlab("besecure-assets-store", "vulnerabilities/vulnerability-metadata.json")
+    return fetch_file("besecure-assets-store", "vulnerabilities/vulnerability-metadata.json")
 
 @app.get("/model_of_interest")
 @cross_origin()
 def get_moi():
-    return fetch_file_from_gitlab("besecure-assets-store", "models/model-metadata.json")
+    return fetch_file("besecure-assets-store", "models/model-metadata.json")
 
 @app.get("/model_assessment/<path:pars>")
 @cross_origin()
 def get_model_assessment(pars):
-    return fetch_file_from_gitlab("besecure-ml-assessment-datastore", pars)
+    return fetch_file("besecure-ml-assessment-datastore", pars)
