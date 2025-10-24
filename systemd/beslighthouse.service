@@ -1,0 +1,15 @@
+[Unit]
+Description=BeSLighthouse Flask App
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/beslighthouse-backend
+Environment=ENV=production
+ExecStart=/usr/bin/gunicorn -c /opt/beslighthouse-backend/gunicorn.conf.py wsgi:app
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

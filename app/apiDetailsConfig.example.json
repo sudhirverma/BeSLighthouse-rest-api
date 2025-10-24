@@ -1,0 +1,10 @@
+{
+    "activeTool": "gitlab",
+    "gitlab": {
+        "namespace": "your_namespace",
+        "branch": "main",
+        "token": "YOUR_GITLAB_TOKEN",
+        "gitLabUrl": "https://gitlab.example.com"
+    },
+    "logDir": "./logs"
+}

@@ -1,39 +1,45 @@
-from flask import Blueprint, current_app, jsonify
-from .services.vcs_client import VCSClient
+from flask import Blueprint, current_app, jsonify, make_response
+from .services.git_client import GitClient
 
-main_bp = Blueprint('main', __name__)
+bp = Blueprint('main', __name__)
+_client = None
 
-def _client():
-    cfg = current_app.config
-    raw_cfg = cfg['API_CONFIG_RAW']
-    return VCSClient(raw_cfg, cfg['ACTIVE_TOOL'], cfg.get('TOKEN') or cfg.get('TOOL_CONFIG', {}).get('token'), cfg.get('BRANCH'))
+@bp.before_app_first_request
+def _init_client():
+    global _client
+    cfg = current_app.config['APP_CONFIG']
+    _client = GitClient(cfg, current_app.logger)
+    current_app.logger.info('GitClient initialized for namespace=%s', cfg.NAMESPACE)
 
-@main_bp.get('/osspoi_master')
+def _json_response(payload, status=200):
+    return make_response(jsonify(payload), status)
+
+@bp.route('/osspoi_master', methods=['GET'])
 def get_osspoi_master():
-    client = _client()
-    return jsonify(client.fetch_file('besecure-assets-store', 'projects/project-metadata.json'))
+    current_app.logger.info('GET /osspoi_master')
+    return _json_response(_client.fetch_file('besecure-assets-store', 'projects/project-metadata.json'))
 
-@main_bp.get('/version_details/<filename>')
-def get_version_detail(filename: str):
-    client = _client()
-    return jsonify(client.fetch_file('besecure-assets-store', f'projects/project-version/{filename}'))
+@bp.route('/version_details/<filename>', methods=['GET'])
+def get_version_detail(filename):
+    current_app.logger.info('GET /version_details/%s', filename)
+    return _json_response(_client.fetch_file('besecure-assets-store', f'projects/project-version/{filename}'))
 
-@main_bp.get('/assessment_datastore/<path:pars>')
-def get_assessment_datastore(pars: str):
-    client = _client()
-    return jsonify(client.fetch_file('besecure-assessment-datastore', pars))
+@bp.route('/assessment_datastore/<path:pars>', methods=['GET'])
+def get_assessment_datastore(pars):
+    current_app.logger.info('GET /assessment_datastore/%s', pars)
+    return _json_response(_client.fetch_file('besecure-assessment-datastore', pars))
 
-@main_bp.get('/vulnerability_of_interest')
+@bp.route('/vulnerability_of_interest', methods=['GET'])
 def get_voi():
-    client = _client()
-    return jsonify(client.fetch_file('besecure-assets-store', 'vulnerabilities/vulnerability-metadata.json'))
+    current_app.logger.info('GET /vulnerability_of_interest')
+    return _json_response(_client.fetch_file('besecure-assets-store', 'vulnerabilities/vulnerability-metadata.json'))
 
-@main_bp.get('/model_of_interest')
+@bp.route('/model_of_interest', methods=['GET'])
 def get_moi():
-    client = _client()
-    return jsonify(client.fetch_file('besecure-assets-store', 'models/model-metadata.json'))
+    current_app.logger.info('GET /model_of_interest')
+    return _json_response(_client.fetch_file('besecure-assets-store', 'models/model-metadata.json'))
 
-@main_bp.get('/model_assessment/<path:pars>')
-def get_model_assessment(pars: str):
-    client = _client()
-    return jsonify(client.fetch_file('besecure-ml-assessment-datastore', pars))
+@bp.route('/model_assessment/<path:pars>', methods=['GET'])
+def get_model_assessment(pars):
+    current_app.logger.info('GET /model_assessment/%s', pars)
+    return _json_response(_client.fetch_file('besecure-ml-assessment-datastore', pars))

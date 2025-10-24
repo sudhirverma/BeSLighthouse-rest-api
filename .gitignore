@@ -1,67 +1,7 @@
-# Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Virtual environments
-venv/
-.env/
-.venv/
-env/
-ENV/
-
-# Flask instance & config
-instance/
-*.db
-*.sqlite3
-*.sqlite
-config/*.json
-!config/.keep
-
-# Logs & temp files
-*.log
-*.pid
-*.tmp
-*.bak
-*.swp
-
-# IDEs / Editors
+*.pyc
+.env
+.venv
+logs/
 .vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-
-# OS-specific files
-.DS_Store
-Thumbs.db
-
-# Python packaging
-build/
-dist/
-*.egg-info/
-.eggs/
-
-# Test / coverage
-.coverage
-htmlcov/
-.tox/
-.nox/
-pytest_cache/
-
-# Docker
-*.tar
-docker-compose.override.yml
-
-# PyInstaller
-*.spec
-
-# Cache
-.cache/
-.mypy_cache/
-__pypackages__/
-
-# Environment example
-.env.example
+node_modules/
