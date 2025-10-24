@@ -1,29 +1,26 @@
-import os
-import json
-from pathlib import Path
+import os, json
+from typing import Dict
 
-def load_config(logger):
-    config_path = Path(os.getenv("BESL_CONFIG_PATH", "/opt/BeSLighthouse/src/apiDetailsConfig.json"))
-    config = {}
+DEFAULT_CONFIG_PATH = os.path.join(os.path.expanduser('/opt'), 'BeSLighthouse', 'src', 'apiDetailsConfig.json')
 
-    if config_path.exists():
-        try:
-            with config_path.open("r") as f:
-                config = json.load(f)
-            logger.info(f"Loaded configuration from {config_path}")
-        except json.JSONDecodeError as e:
-            logger.error(f"Invalid JSON in config file {config_path}: {e}")
-        except Exception as e:
-            logger.error(f"Failed to read config file {config_path}: {e}")
-    else:
-        logger.warning(f"Configuration file not found at {config_path}")
+def _load_json_file(path: str) -> Dict:
+    try:
+        with open(path, 'r') as fh:
+            return json.load(fh)
+    except Exception:
+        return {}
 
-    config["activeTool"] = os.getenv("BESL_ACTIVE_TOOL", config.get("activeTool", "gitlab"))
-
-    tool = config.get(config["activeTool"], {})
-    tool["namespace"] = os.getenv("BESL_NAMESPACE", tool.get("namespace"))
-    tool["branch"] = os.getenv("BESL_BRANCH", tool.get("branch", "main"))
-    tool["token"] = os.getenv("BESL_TOKEN", tool.get("token"))
-    config[config["activeTool"]] = tool
-
-    return config
+def load_config(config_path: str | None = None) -> Dict:
+    path = config_path or os.getenv('BESL_CONFIG_PATH') or DEFAULT_CONFIG_PATH
+    cfg = _load_json_file(path)
+    active_tool = os.getenv('ACTIVE_TOOL') or cfg.get('activeTool', 'gitlab')
+    tool_cfg = cfg.get(active_tool, {})
+    return {
+        'API_CONFIG_RAW': cfg,
+        'ACTIVE_TOOL': active_tool.lower(),
+        'TOOL_CONFIG': tool_cfg,
+        'NAMESPACE': tool_cfg.get('namespace'),
+        'BRANCH': tool_cfg.get('branch', 'main'),
+        'TOKEN': tool_cfg.get('token'),
+        'LOG_LEVEL': os.getenv('LOG_LEVEL', 'INFO')
+    }
