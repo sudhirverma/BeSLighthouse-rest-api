@@ -4,7 +4,7 @@ from .services.git_client import GitClient
 bp = Blueprint('main', __name__)
 _client = None
 
-@bp.before_app_first_request
+@bp.before_app_request
 def _init_client():
     global _client
     cfg = current_app.config['APP_CONFIG']
